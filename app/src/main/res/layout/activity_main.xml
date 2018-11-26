@@ -29,30 +29,50 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/button"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Button" />
 
             <Button
                 android:id="@+id/button2"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Button" />
 
             <Button
                 android:id="@+id/button3"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Button" />
 
             <Button
                 android:id="@+id/button4"
+                style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="Button" />
+
+            <Button
+                android:id="@+id/button5"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Button" />
+
+            <Button
+                android:id="@+id/button6"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Button" />
         </LinearLayout>
     </HorizontalScrollView>

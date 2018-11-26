@@ -3,9 +3,9 @@ package fr.enssat.hemerylievin.androidvideoplayer.models;
 public class Chapitre {
     private int numero;
     private String titre;
-    private double marque;
+    private int marque;
 
-    public Chapitre(int numero, String titre, double marque) {
+    public Chapitre(int numero, String titre, int marque) {
         this.numero = numero;
         this.titre = titre;
         this.marque = marque;
@@ -27,11 +27,11 @@ public class Chapitre {
         this.titre = titre;
     }
 
-    public double getMarque() {
+    public int getMarque() {
         return marque;
     }
 
-    public void setMarque(double marque) {
+    public void setMarque(int marque) {
         this.marque = marque;
     }
 }
