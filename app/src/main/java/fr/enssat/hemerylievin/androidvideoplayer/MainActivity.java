@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.VideoView;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnPreparedListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,22 +27,49 @@ public class MainActivity extends AppCompatActivity {
     private Button button;
     private VideoView simpleVideoView;
     private static MainActivity instance;
-
+    private int position = 0;
+    private MediaController mediaController;
+    private Uri uri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
 
         setContentView(R.layout.activity_main);
+        videoView = findViewById(R.id.VideoView);
 
-        MediaController mediaController = new MediaController(this);
-        Uri uri = Uri.parse("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4");
-        simpleVideoView = findViewById(R.id.VideoView);
-        simpleVideoView.setVideoURI(uri);
-        simpleVideoView.setMediaController(mediaController);
-        simpleVideoView.start();
+        if (mediaController == null) {
+            mediaController = new MediaController(this);
 
-        this.chapitres = extractJson();
+            mediaController.setAnchorView(videoView);
+
+            videoView.setMediaController(mediaController);
+        }
+
+        uri = Uri.parse("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4");
+
+        videoView.setVideoURI(uri);
+
+        videoView.setOnPreparedListener(new OnPreparedListener() {
+
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                videoView.seekTo(position);
+                if (position == 0) {
+                    videoView.start();
+                }
+                // When video Screen change size.
+                mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+                    @Override
+                    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+                        // Re-Set the videoView that acts as the anchor for the MediaController
+                        mediaController.setAnchorView(videoView);
+                    }
+                });
+            }
+        });
+
+        chapitres = extractJson();
+        videoView.requestFocus();
         setButtonsListener();
     }
 
@@ -97,6 +126,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return chapitres;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+
+        // Store current position.
+        savedInstanceState.putInt("CurrentPosition", videoView.getCurrentPosition());
+        videoView.pause();
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Get saved position.
+        position = savedInstanceState.getInt("CurrentPosition");
+        videoView.seekTo(position);
     }
 
     public String loadJSONFromAsset(Context context) {
