@@ -1,0 +1,14 @@
+{
+  "chapitres": [
+    {
+      "numero": 1,
+      "titre": "Premier",
+      "timestamp": 0.0
+    },
+    {
+      "numero": 2,
+      "titre": "Second",
+      "timestamp": 2.54
+    }
+  ]
+}
