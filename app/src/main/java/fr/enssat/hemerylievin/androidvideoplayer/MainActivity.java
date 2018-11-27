@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         System.out.println("3");
         this.initializeVideoPlayer();
+        this.initializeWebView();
         System.out.println("4");
         this.initializeButtons();
         System.out.println("5");
@@ -74,8 +76,14 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-        this.webView.loadUrl("https://en.wikipedia.org/wiki/Big_Buck_Bunny");
+
         this.videoView.requestFocus();
+    }
+
+    private void initializeWebView() {
+        this.webView.setWebViewClient(new WebViewClient());
+        this.webView.setOverScrollMode(WebView.OVER_SCROLL_NEVER);
+        this.webView.loadUrl("https://en.wikipedia.org/wiki/Big_Buck_Bunny");
     }
 
     private void initializeButtons() {
