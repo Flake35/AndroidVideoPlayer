@@ -1,10 +1,13 @@
 package fr.enssat.hemerylievin.androidvideoplayer;
 
+import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.ColorInt;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebView;
@@ -43,13 +46,11 @@ public class MainActivity extends AppCompatActivity {
         this.videoView = findViewById(R.id.VideoView);
         this.webView = findViewById(R.id.webView);
 
-        System.out.println("3");
         this.initializeVideoPlayer();
         this.initializeWebView();
-        System.out.println("4");
         this.initializeButtons();
-        System.out.println("5");
         this.createThread();
+
         this.updatePosition.run();
 
     }
@@ -58,20 +59,18 @@ public class MainActivity extends AppCompatActivity {
         this.mediaController = new MediaController(this);
         this.mediaController.setAnchorView(this.videoView);
         this.videoView.setMediaController(this.mediaController);
-        this.videoView.setVideoURI(Uri.parse("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4"));
+        this.videoView.setVideoURI(Uri.parse(videoUrl));
 
         this.videoView.setOnPreparedListener(new OnPreparedListener() {
             public void onPrepared(MediaPlayer mediaPlayer) {
-                VideoView videoPlayer = MainActivity.getInstance().getVideoView();
-                int position = MainActivity.getInstance().getPosition();
-                videoPlayer.seekTo(position);
+                videoView.seekTo(position);
                 if (position == 0) {
-                    videoPlayer.start();
+                    videoView.start();
                 }
                 mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
                     @Override
                     public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-                        MainActivity.getInstance().getMediaControl().setAnchorView(videoView);
+                        mediaController.setAnchorView(videoView);
                     }
                 });
             }
@@ -88,20 +87,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeButtons() {
         LinearLayout buttonPanel = findViewById(R.id.buttonLayout);
+        Chapitre lastChapter = new Chapitre();
 
         for (Chapitre chapitre : this.chapitres) {
             Button button = new Button(getApplicationContext());
             button.setText(chapitre.getTitre());
             button.setTag(chapitre.getNumero());
             button.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("ResourceAsColor")
                 public void onClick(View v) {
-                    VideoView videoPlayer = MainActivity.getInstance().findViewById(R.id.VideoView);
-                    int progress = MainActivity.getInstance().getChapitre((int) v.getTag()).getMarque();
-                    videoPlayer.seekTo(progress);
+                    int progress = getChapitre((int) v.getTag()).getMarque();
+                    videoView.seekTo(progress);
                 }
             });
             buttonPanel.addView(button);
+            lastChapter = chapitre;
         }
+        lastChapter.setNextMarque(this.videoView.getDuration());
     }
 
     public Chapitre getChapitre(int chapter) {
@@ -133,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 int position = videoView.getCurrentPosition();
                 System.out.println(position);
-                MainActivity.getInstance().getHandler().postDelayed(this, 1000);
+                handler.postDelayed(this, 1000);
             }
         };
     }

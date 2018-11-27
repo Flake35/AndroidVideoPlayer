@@ -27,7 +27,10 @@ public abstract class JsonLoader {
                 int numero = jo_inside.getInt("numero");
                 String titre = jo_inside.getString("titre");
                 int time = jo_inside.getInt("timestamp");
-                chapitres.add(new Chapitre(numero, titre, time));
+                chapitres.add(new Chapitre(numero, titre, time, 0));
+                if ( i > 0 ) {
+                    chapitres.get(i - 1).setNextMarque(time);
+                }
             }
         } catch (JSONException e) {
             System.out.println("Impssible de charger le fichier json");
