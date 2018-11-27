@@ -3,6 +3,7 @@ package fr.enssat.hemerylievin.androidvideoplayer;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebView;
@@ -32,6 +33,16 @@ public class MainActivity extends AppCompatActivity {
     private MediaController mediaController;
     private WebView webView;
     private Uri uri;
+    private Handler handler = new Handler();
+    private Runnable updatePosition = new Runnable() {
+        @Override
+        public void run() {
+            position = videoView.getCurrentPosition();
+            System.out.println(position);
+            handler.postDelayed(this, 1000);
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         webView.loadUrl("https://en.wikipedia.org/wiki/Big_Buck_Bunny");
         videoView.requestFocus();
         setButtonsListener();
+        updatePosition.run();
     }
 
     private void setButtonsListener() {
