@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.VideoView;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private static MainActivity instance;
     private int position = 0;
     private MediaController mediaController;
+    private WebView webView;
     private Uri uri;
 
     @Override
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         videoView = findViewById(R.id.VideoView);
+        webView = findViewById(R.id.webView);
 
         if (mediaController == null) {
             mediaController = new MediaController(this);
@@ -64,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         chapitres = extractJson();
+        webView.loadUrl("https://en.wikipedia.org/wiki/Big_Buck_Bunny");
         videoView.requestFocus();
         setButtonsListener();
     }
