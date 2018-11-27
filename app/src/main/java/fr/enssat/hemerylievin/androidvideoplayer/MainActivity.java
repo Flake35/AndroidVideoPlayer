@@ -1,6 +1,7 @@
 package fr.enssat.hemerylievin.androidvideoplayer;
 
-import android.content.Context;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,135 +9,100 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.VideoView;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnPreparedListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
 
 import fr.enssat.hemerylievin.androidvideoplayer.models.Chapitre;
-import fr.enssat.hemerylievin.androidvideoplayer.models.Chapitres;
 
 public class MainActivity extends AppCompatActivity {
-
-    private Chapitres chapitres;
-    private Button button;
-    private VideoView videoView;
     private static MainActivity instance;
+
+    private final String videoUrl = "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4";
+
     private int position = 0;
+    private ArrayList<Chapitre> chapitres;
+    private VideoView videoView;
     private MediaController mediaController;
+
     private WebView webView;
-    private Uri uri;
     private Handler handler = new Handler();
-    private Runnable updatePosition = new Runnable() {
-        @Override
-        public void run() {
-            position = videoView.getCurrentPosition();
-            System.out.println(position);
-            handler.postDelayed(this, 1000);
-        }
-    };
+    private Runnable updatePosition;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
+        this.chapitres = JsonLoader.getChapitres();
 
         setContentView(R.layout.activity_main);
-        videoView = findViewById(R.id.VideoView);
-        webView = findViewById(R.id.webView);
+        this.videoView = findViewById(R.id.VideoView);
+        this.webView = findViewById(R.id.webView);
 
-        if (mediaController == null) {
-            mediaController = new MediaController(this);
-            mediaController.setAnchorView(videoView);
-            videoView.setMediaController(mediaController);
-        }
+        System.out.println("3");
+        this.initializeVideoPlayer();
+        System.out.println("4");
+        this.initializeButtons();
+        System.out.println("5");
+        this.createThread();
+        this.updatePosition.run();
 
-        uri = Uri.parse("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4");
-        videoView.setVideoURI(uri);
+    }
 
-        videoView.setOnPreparedListener(new OnPreparedListener() {
+    private void initializeVideoPlayer() {
+        this.mediaController = new MediaController(this);
+        this.mediaController.setAnchorView(this.videoView);
+        this.videoView.setMediaController(this.mediaController);
+        this.videoView.setVideoURI(Uri.parse("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4"));
+
+        this.videoView.setOnPreparedListener(new OnPreparedListener() {
             public void onPrepared(MediaPlayer mediaPlayer) {
-                videoView.seekTo(position);
+                VideoView videoPlayer = MainActivity.getInstance().getVideoView();
+                int position = MainActivity.getInstance().getPosition();
+                videoPlayer.seekTo(position);
                 if (position == 0) {
-                    videoView.start();
+                    videoPlayer.start();
                 }
                 mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
                     @Override
                     public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-                        mediaController.setAnchorView(videoView);
+                        MainActivity.getInstance().getMediaControl().setAnchorView(videoView);
                     }
                 });
             }
         });
-
-        chapitres = extractJson();
-        webView.loadUrl("https://en.wikipedia.org/wiki/Big_Buck_Bunny");
-        videoView.requestFocus();
-        setButtonsListener();
-        updatePosition.run();
+        this.webView.loadUrl("https://en.wikipedia.org/wiki/Big_Buck_Bunny");
+        this.videoView.requestFocus();
     }
 
-    private void setButtonsListener() {
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                VideoView videoPlayer = MainActivity.getInstance().findViewById(R.id.VideoView);
-                Chapitre chaptitre = MainActivity.getInstance().getChapitre(1);
-                videoPlayer.seekTo(chaptitre.getMarque());
-                System.out.println(chaptitre.getTitre());
-            }
-        });
+    private void initializeButtons() {
+        LinearLayout buttonPanel = findViewById(R.id.buttonLayout);
 
-
-        findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                VideoView videoPlayer = MainActivity.getInstance().findViewById(R.id.VideoView);
-                Chapitre chaptitre = MainActivity.getInstance().getChapitre(2);
-                videoPlayer.seekTo(chaptitre.getMarque());
-                System.out.println(chaptitre.getTitre());
-            }
-        });
-    }
-
-    public static MainActivity getInstance() {
-        return instance;
+        for (Chapitre chapitre : this.chapitres) {
+            Button button = new Button(getApplicationContext());
+            button.setText(chapitre.getTitre());
+            button.setTag(chapitre.getNumero());
+            button.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    VideoView videoPlayer = MainActivity.getInstance().findViewById(R.id.VideoView);
+                    int progress = MainActivity.getInstance().getChapitre((int) v.getTag()).getMarque();
+                    videoPlayer.seekTo(progress);
+                }
+            });
+            buttonPanel.addView(button);
+        }
     }
 
     public Chapitre getChapitre(int chapter) {
-        for (Chapitre chapitre : this.chapitres.getChapitres()) {
+        for (Chapitre chapitre : this.chapitres) {
             if (chapitre.getNumero() == chapter) {
                 return chapitre;
             }
         }
         return null;
-    }
-
-    public Chapitres extractJson() {
-        Chapitres chapitres = new Chapitres();
-
-        try {
-            JSONObject obj = new JSONObject(loadJSONFromAsset(getApplicationContext()));
-            JSONArray m_jArry = obj.getJSONArray("chapitres");
-
-           for (int i = 0; i < m_jArry.length(); i++) {
-                JSONObject jo_inside = m_jArry.getJSONObject(i);
-                int numero = jo_inside.getInt("numero");
-                String titre = jo_inside.getString("titre");
-                int time = jo_inside.getInt("timestamp");
-                chapitres.add(new Chapitre(numero, titre, time));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return chapitres;
     }
 
     @Override
@@ -153,27 +119,34 @@ public class MainActivity extends AppCompatActivity {
         videoView.seekTo(position);
     }
 
-    public String loadJSONFromAsset(Context context) {
-        String json = null;
-        try {
-            InputStream is = context.getAssets().open("summary.json");
+    private void createThread() {
+        this.updatePosition = new Runnable() {
+            @Override
+            public void run() {
+                int position = videoView.getCurrentPosition();
+                System.out.println(position);
+                MainActivity.getInstance().getHandler().postDelayed(this, 1000);
+            }
+        };
+    }
 
-            int size = is.available();
+    public VideoView getVideoView() {
+        return this.videoView;
+    }
 
-            byte[] buffer = new byte[size];
+    public MediaController getMediaControl() {
+        return this.mediaController;
+    }
 
-            is.read(buffer);
+    public Handler getHandler() {
+        return handler;
+    }
 
-            is.close();
+    public int getPosition() {
+        return position;
+    }
 
-            json = new String(buffer, "UTF-8");
-
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
-
+    public static MainActivity getInstance() {
+        return instance;
     }
 }
