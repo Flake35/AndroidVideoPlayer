@@ -25,11 +25,12 @@ public class MainActivity extends AppCompatActivity {
 
     private Chapitres chapitres;
     private Button button;
-    private VideoView simpleVideoView;
+    private VideoView videoView;
     private static MainActivity instance;
     private int position = 0;
     private MediaController mediaController;
     private Uri uri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,28 +41,22 @@ public class MainActivity extends AppCompatActivity {
 
         if (mediaController == null) {
             mediaController = new MediaController(this);
-
             mediaController.setAnchorView(videoView);
-
             videoView.setMediaController(mediaController);
         }
 
         uri = Uri.parse("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4");
-
         videoView.setVideoURI(uri);
 
         videoView.setOnPreparedListener(new OnPreparedListener() {
-
             public void onPrepared(MediaPlayer mediaPlayer) {
                 videoView.seekTo(position);
                 if (position == 0) {
                     videoView.start();
                 }
-                // When video Screen change size.
                 mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
                     @Override
                     public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-                        // Re-Set the videoView that acts as the anchor for the MediaController
                         mediaController.setAnchorView(videoView);
                     }
                 });
@@ -131,8 +126,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-
-        // Store current position.
         savedInstanceState.putInt("CurrentPosition", videoView.getCurrentPosition());
         videoView.pause();
     }
@@ -140,8 +133,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-
-        // Get saved position.
         position = savedInstanceState.getInt("CurrentPosition");
         videoView.seekTo(position);
     }
