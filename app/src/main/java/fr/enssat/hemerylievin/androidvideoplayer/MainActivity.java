@@ -21,8 +21,6 @@ import fr.enssat.hemerylievin.androidvideoplayer.models.Chapitre;
 import fr.enssat.hemerylievin.androidvideoplayer.models.WebUrl;
 
 public class MainActivity extends AppCompatActivity {
-    private static MainActivity instance;
-
     private final String videoUrl = "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4";
 
     private int position = 0;
@@ -42,10 +40,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        instance = this;
-        this.chapitres = JsonLoader.getChapitres();
+
+        this.chapitres = JsonLoader.getChapitres(getApplicationContext());
         this.customButtons = new ArrayList<>();
-        this.webUrls = JsonLoader.getWebUrls();
+        this.webUrls = JsonLoader.getWebUrls(getApplicationContext());
         this.currentWebUrl = this.webUrls.get(0);
 
         setContentView(R.layout.activity_main);
@@ -93,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeButtons() {
         LinearLayout buttonPanel = findViewById(R.id.buttonLayout);
-        Chapitre lastChapter = new Chapitre();
 
         for (Chapitre chapitre : this.chapitres) {
             CustomButton button = new CustomButton(chapitre.getTitre(), chapitre.getNumero(), chapitre.getMarque(), chapitre.getNextMarque(), getApplicationContext());
@@ -106,9 +103,7 @@ public class MainActivity extends AppCompatActivity {
             });
             buttonPanel.addView(button.getButton());
             customButtons.add(button);
-            lastChapter = chapitre;
         }
-        lastChapter.setNextMarque(this.videoView.getDuration());
         this.currentButton = this.customButtons.get(0);
         this.currentButton.getButton().setTextColor(Color.DKGRAY);
     }
@@ -133,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             for (WebUrl webUrl : this.webUrls){
                 if (webUrl.isCurrentUrl(this.position)){
                     currentWebUrl = webUrl;
-                    initializeWebView();
+                    this.webView.loadUrl(this.currentWebUrl.getUrl());
                 }
             }
         }
@@ -172,25 +167,5 @@ public class MainActivity extends AppCompatActivity {
                 handler.postDelayed(this, 1000);
             }
         };
-    }
-
-    public VideoView getVideoView() {
-        return this.videoView;
-    }
-
-    public MediaController getMediaControl() {
-        return this.mediaController;
-    }
-
-    public Handler getHandler() {
-        return handler;
-    }
-
-    public int getPosition() {
-        return position;
-    }
-
-    public static MainActivity getInstance() {
-        return instance;
     }
 }

@@ -15,12 +15,12 @@ import fr.enssat.hemerylievin.androidvideoplayer.models.WebUrl;
 
 public abstract class JsonLoader {
 
-    public static ArrayList<Chapitre> getChapitres() {
+    public static ArrayList<Chapitre> getChapitres(Context context) {
 
         ArrayList<Chapitre> chapitres = new ArrayList<>();
 
         try {
-            JSONObject obj = new JSONObject(loadChaptersFromAsset(MainActivity.getInstance().getApplicationContext()));
+            JSONObject obj = new JSONObject(loadChaptersFromAsset(context));
             JSONArray m_jArry = obj.getJSONArray("chapitres");
 
             for (int i = 0; i < m_jArry.length(); i++) {
@@ -41,18 +41,18 @@ public abstract class JsonLoader {
         return chapitres;
     }
 
-    public static ArrayList<WebUrl> getWebUrls() {
+    public static ArrayList<WebUrl> getWebUrls(Context context) {
         ArrayList<WebUrl> webUrls = new ArrayList<>();
 
         try {
-            JSONObject obj = new JSONObject(loadUrlsFromAsset(MainActivity.getInstance().getApplicationContext()));
+            JSONObject obj = new JSONObject(loadUrlsFromAsset(context));
             JSONArray m_jArry = obj.getJSONArray("weburl");
 
             for (int i = 0; i < m_jArry.length(); i++) {
                 JSONObject jo_inside = m_jArry.getJSONObject(i);
                 String url = jo_inside.getString("url");
                 int startTime = jo_inside.getInt("startTime");
-                int stopTime = jo_inside.getInt("startTime");
+                int stopTime = jo_inside.getInt("stopTime");
                 webUrls.add(new WebUrl(url, startTime, stopTime));
             }
         } catch (JSONException e) {
