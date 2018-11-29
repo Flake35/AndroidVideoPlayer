@@ -1,18 +1,15 @@
 package fr.enssat.hemerylievin.androidvideoplayer;
 
-import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.ColorInt;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.VideoView;
@@ -91,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     private void initializeWebView() {
         this.webView.setWebViewClient(new WebViewClient());
         this.webView.setOverScrollMode(WebView.OVER_SCROLL_NEVER);
-        this.webView.loadUrl("https://en.wikipedia.org/wiki/Big_Buck_Bunny");
+        this.webView.loadUrl(this.currentWebUrl.getUrl());
     }
 
     private void initializeButtons() {
@@ -100,31 +97,32 @@ public class MainActivity extends AppCompatActivity {
 
         for (Chapitre chapitre : this.chapitres) {
             CustomButton button = new CustomButton(chapitre.getTitre(), chapitre.getNumero(), chapitre.getMarque(), chapitre.getNextMarque(), getApplicationContext());
-            /*Button button = new Button(getApplicationContext());
-            button.setText(chapitre.getTitre());
-            button.setTag(chapitre.getNumero());*/
-            button.button.setOnClickListener(new View.OnClickListener() {
-                @SuppressLint("ResourceAsColor")
+            button.getButton().setTextColor(Color.GRAY);
+            button.getButton().setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     int progress = getChapitre((int) v.getTag()).getMarque();
                     videoView.seekTo(progress);
                 }
             });
-            buttonPanel.addView(button.button);
+            buttonPanel.addView(button.getButton());
             customButtons.add(button);
             lastChapter = chapitre;
         }
         lastChapter.setNextMarque(this.videoView.getDuration());
         this.currentButton = this.customButtons.get(0);
+        this.currentButton.getButton().setTextColor(Color.DKGRAY);
     }
 
     private void checkCurrentButton() {
         if (!currentButton.isCurrentButton(this.position)){
-            currentButton.button.setBackgroundColor(4);
+            currentButton.getButton().setTextColor(Color.GRAY);
             for (CustomButton button : this.customButtons){
                 if (button.isCurrentButton(this.position)){
                     currentButton = button;
-                    currentButton.button.setBackgroundColor(9);
+                    currentButton.getButton().setTextColor(Color.DKGRAY);
+                }
+                else {
+                    button.getButton().setTextColor(Color.GRAY);
                 }
             }
         }
@@ -135,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
             for (WebUrl webUrl : this.webUrls){
                 if (webUrl.isCurrentUrl(this.position)){
                     currentWebUrl = webUrl;
-                    this.webView.loadUrl(currentWebUrl.url);
+                    initializeWebView();
                 }
             }
         }
@@ -168,8 +166,7 @@ public class MainActivity extends AppCompatActivity {
         this.updatePosition = new Runnable() {
             @Override
             public void run() {
-                int position = videoView.getCurrentPosition();
-                System.out.println(position);
+                position = videoView.getCurrentPosition();
                 checkCurrentButton();
                 checkCurrentUrl();
                 handler.postDelayed(this, 1000);

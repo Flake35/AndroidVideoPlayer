@@ -3,11 +3,11 @@
     {
       "url": "http://djibaout.pythonanywhere.com/android/1",
       "startTime": 0,
-      "stopTime": 325468
+      "stopTime": 10000
     },
     {
       "url": "http://djibaout.pythonanywhere.com/android/2",
-      "startTime": 325468,
+      "startTime": 10000,
       "stopTime": 487569
     },
     {

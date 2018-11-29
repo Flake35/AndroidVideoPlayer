@@ -1,9 +1,9 @@
 package fr.enssat.hemerylievin.androidvideoplayer.models;
 
 public class WebUrl {
-    public String url;
-    public int startTime;
-    public int stopTime;
+    private String url;
+    private int startTime;
+    private int stopTime;
 
     public WebUrl(String url, int start, int stop){
         this.url = url;
@@ -11,10 +11,34 @@ public class WebUrl {
         this.stopTime = stop;
     }
 
-    public Boolean isCurrentUrl(int position){
+    public boolean isCurrentUrl(int position){
         if (position >= this.startTime && position < stopTime) {
             return true;
         }
         return false;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public int getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(int startTime) {
+        this.startTime = startTime;
+    }
+
+    public int getStopTime() {
+        return stopTime;
+    }
+
+    public void setStopTime(int stopTime) {
+        this.stopTime = stopTime;
     }
 }

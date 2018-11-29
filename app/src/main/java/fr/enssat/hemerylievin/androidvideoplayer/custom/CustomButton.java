@@ -4,9 +4,9 @@ import android.content.Context;
 import android.widget.Button;
 
 public class CustomButton {
-    public Button button;
-    public int startTime;
-    public int stopTime;
+    private Button button;
+    private int startTime;
+    private int stopTime;
 
     public CustomButton(String title, int tag, int startTIme, int stopTime, Context appContext) {
         this.button = new Button(appContext);
@@ -16,10 +16,34 @@ public class CustomButton {
         this.stopTime = stopTime;
     }
 
-    public Boolean isCurrentButton(int position) {
+    public boolean isCurrentButton(int position) {
         if (position >= this.startTime && position < this.stopTime){
             return true;
         }
         return false;
+    }
+
+    public Button getButton() {
+        return button;
+    }
+
+    public void setButton(Button button) {
+        this.button = button;
+    }
+
+    public int getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(int startTime) {
+        this.startTime = startTime;
+    }
+
+    public int getStopTime() {
+        return stopTime;
+    }
+
+    public void setStopTime(int stopTime) {
+        this.stopTime = stopTime;
     }
 }
