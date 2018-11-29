@@ -2,12 +2,17 @@
   "chapitres": [
     {
       "numero": 1,
-      "titre": "Premier",
-      "timestamp": 130350
+      "titre": "Intro",
+      "timestamp": 0
     },
     {
       "numero": 2,
-      "titre": "Second",
+      "titre": "Title",
+      "timestamp": 130350
+    },
+    {
+      "numero": 3,
+      "titre": "Butterfly",
       "timestamp": 403250
     }
   ]

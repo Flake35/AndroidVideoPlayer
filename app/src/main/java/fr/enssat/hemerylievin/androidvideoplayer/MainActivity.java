@@ -19,7 +19,9 @@ import android.widget.VideoView;
 
 import java.util.ArrayList;
 
+import fr.enssat.hemerylievin.androidvideoplayer.custom.CustomButton;
 import fr.enssat.hemerylievin.androidvideoplayer.models.Chapitre;
+import fr.enssat.hemerylievin.androidvideoplayer.models.WebUrl;
 
 public class MainActivity extends AppCompatActivity {
     private static MainActivity instance;
@@ -28,8 +30,12 @@ public class MainActivity extends AppCompatActivity {
 
     private int position = 0;
     private ArrayList<Chapitre> chapitres;
+    private ArrayList<CustomButton> customButtons;
+    private ArrayList<WebUrl> webUrls;
     private VideoView videoView;
     private MediaController mediaController;
+    private CustomButton currentButton;
+    private WebUrl currentWebUrl;
 
     private WebView webView;
     private Handler handler = new Handler();
@@ -41,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         instance = this;
         this.chapitres = JsonLoader.getChapitres();
+        this.customButtons = new ArrayList<>();
+        this.webUrls = JsonLoader.getWebUrls();
+        this.currentWebUrl = this.webUrls.get(0);
 
         setContentView(R.layout.activity_main);
         this.videoView = findViewById(R.id.VideoView);
@@ -90,20 +99,46 @@ public class MainActivity extends AppCompatActivity {
         Chapitre lastChapter = new Chapitre();
 
         for (Chapitre chapitre : this.chapitres) {
-            Button button = new Button(getApplicationContext());
+            CustomButton button = new CustomButton(chapitre.getTitre(), chapitre.getNumero(), chapitre.getMarque(), chapitre.getNextMarque(), getApplicationContext());
+            /*Button button = new Button(getApplicationContext());
             button.setText(chapitre.getTitre());
-            button.setTag(chapitre.getNumero());
-            button.setOnClickListener(new View.OnClickListener() {
+            button.setTag(chapitre.getNumero());*/
+            button.button.setOnClickListener(new View.OnClickListener() {
                 @SuppressLint("ResourceAsColor")
                 public void onClick(View v) {
                     int progress = getChapitre((int) v.getTag()).getMarque();
                     videoView.seekTo(progress);
                 }
             });
-            buttonPanel.addView(button);
+            buttonPanel.addView(button.button);
+            customButtons.add(button);
             lastChapter = chapitre;
         }
         lastChapter.setNextMarque(this.videoView.getDuration());
+        this.currentButton = this.customButtons.get(0);
+    }
+
+    private void checkCurrentButton() {
+        if (!currentButton.isCurrentButton(this.position)){
+            currentButton.button.setBackgroundColor(4);
+            for (CustomButton button : this.customButtons){
+                if (button.isCurrentButton(this.position)){
+                    currentButton = button;
+                    currentButton.button.setBackgroundColor(9);
+                }
+            }
+        }
+    }
+
+    private void checkCurrentUrl() {
+        if (!currentWebUrl.isCurrentUrl(this.position)){
+            for (WebUrl webUrl : this.webUrls){
+                if (webUrl.isCurrentUrl(this.position)){
+                    currentWebUrl = webUrl;
+                    this.webView.loadUrl(currentWebUrl.url);
+                }
+            }
+        }
     }
 
     public Chapitre getChapitre(int chapter) {
@@ -135,6 +170,8 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 int position = videoView.getCurrentPosition();
                 System.out.println(position);
+                checkCurrentButton();
+                checkCurrentUrl();
                 handler.postDelayed(this, 1000);
             }
         };

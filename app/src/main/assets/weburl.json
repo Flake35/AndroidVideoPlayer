@@ -1,0 +1,24 @@
+{
+  "weburl": [
+    {
+      "url": "http://djibaout.pythonanywhere.com/android/1",
+      "startTime": 0,
+      "stopTime": 325468
+    },
+    {
+      "url": "http://djibaout.pythonanywhere.com/android/2",
+      "startTime": 325468,
+      "stopTime": 487569
+    },
+    {
+      "url": "http://djibaout.pythonanywhere.com/android/3",
+      "startTime": 487569,
+      "stopTime": 687569
+    },
+    {
+      "url": "http://djibaout.pythonanywhere.com/android/4",
+      "startTime": 687569,
+      "stopTime": 99999999
+    }
+  ]
+}
