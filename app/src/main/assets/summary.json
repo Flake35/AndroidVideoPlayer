@@ -2,18 +2,43 @@
   "chapitres": [
     {
       "numero": 1,
-      "titre": "Intro",
+      "titre": "Title",
       "timestamp": 0
     },
     {
       "numero": 2,
-      "titre": "Title",
-      "timestamp": 130350
+      "titre": "Intro",
+      "timestamp": 25000
     },
     {
       "numero": 3,
       "titre": "Butterfly",
-      "timestamp": 403250
+      "timestamp": 80000
+    },
+    {
+      "numero": 4,
+      "titre": "Bad Boys",
+      "timestamp": 150000
+    },
+    {
+      "numero": 5,
+      "titre": "Preparation",
+      "timestamp": 226000
+    },
+    {
+      "numero": 6,
+      "titre": "Revenge",
+      "timestamp": 300000
+    },
+    {
+      "numero": 7,
+      "titre": "Credits",
+      "timestamp": 490000
+    },
+    {
+      "numero": 8,
+      "titre": "Post-Credits",
+      "timestamp": 600000
     }
   ]
 }
